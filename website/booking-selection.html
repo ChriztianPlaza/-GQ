@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Services - GQ Barbershop</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Booking Selection Page -->
+    <div class="booking-selection-page">
+        <!-- Header -->
+        <div class="simple-header">
+            <div class="simple-logo">
+                <div class="simple-logo-text">GQ</div>
+            </div>
+            <button class="simple-back-btn" onclick="window.location.href='otp-verification.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="booking-selection-content">
+            <!-- Services & Staff Assignment Section -->
+            <div class="selection-section">
+                <h2 class="section-title">Choose Services & Assign Staff</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" id="addStaffBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Staff Member
+                    </button>
+                    <button class="action-btn secondary" id="deleteStaffBtn">
+                        <i class="fas fa-trash"></i>
+                        Remove Last Staff
+                    </button>
+                </div>
+                
+                <div class="staff-services-container" id="staffServicesContainer">
+                    <div class="staff-services-assignment" data-assignment-id="1">
+                        <div class="assignment-header">
+                            <h4 class="assignment-title">Staff Assignment #1</h4>
+                        </div>
+                        
+                        <!-- Staff Selection -->
+                        <div class="staff-selection">
+                            <label class="assignment-label">Select Staff Member:</label>
+                            <div class="selector-dropdown">
+                                <select class="staff-select">
+                                    <option value="">Choose staff member...</option>
+                                    <option value="miguel" data-type="barber">Miguel Santos - Master Barber</option>
+                                    <option value="carlos" data-type="barber">Carlos Rivera - Senior Barber</option>
+                                    <option value="luis" data-type="barber">Luis Garcia - Barber</option>
+                                    <option value="jose" data-type="barber">Jose Martinez - Barber</option>
+                                    <option value="ricardo" data-type="barber">Ricardo Dela Cruz - Barber</option>
+                                    <option value="antonio" data-type="barber">Antonio Ramos - Barber</option>
+                                    <option value="manuel" data-type="barber">Manuel Torres - Barber</option>
+                                    <option value="eduardo" data-type="barber">Eduardo Hernandez - Barber</option>
+                                    <option value="maria" data-type="manicurist">Maria Cruz - Manicurist</option>
+                                    <option value="any-barber" data-type="any">Any Available Barber</option>
+                                </select>
+                                <i class="fas fa-chevron-down dropdown-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Services for this Staff -->
+                        <div class="services-for-staff">
+                            <div class="services-header">
+                                <label class="assignment-label">Services for this staff member:</label>
+                                <div class="service-actions">
+                                    <button class="service-action-btn add-service" data-assignment="1">
+                                        <i class="fas fa-plus"></i>
+                                        Add Service
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="services-list" data-assignment="1">
+                                <div class="service-item" data-service-id="1">
+                                    <div class="selector-dropdown">
+                                        <select class="service-select">
+                                            <option value="">Choose a service...</option>
+                                            <!-- FIXED: Made sure all options have consistent data-price and data-duration attributes -->
+                                            <!-- Men's Grooming -->
+                                            <option value="haircut" data-price="300" >Haircut - ₱300</option>
+                                            <option value="haircut-shampoo" data-price="370" >Haircut with Shampoo - ₱370</option>
+                                            
+                                            <!-- Treatment Services -->
+                                            <option value="hair-spa" data-price="400" >Hair Spa - ₱400</option>
+                                            <option value="hair-treatment" data-price="550" >Hair Treatment/Amino Mint - ₱550</option>
+                                            <option value="scalp-therapy" data-price="500" >Scalp Therapy/Walnut Extract - ₱500 </option>
+                                            <option value="hair-color-regular" data-price="900" >Hair Color (Regular) - ₱900 </option>
+                                            <option value="hair-color-schwarzkopf" data-price="900" >Hair Color (Schwarzkopf) - ₱900</option>
+                                            
+                                            <!-- Hand and Foot Care -->
+                                            <option value="manicure" data-price="250" >Manicure - ₱250</option>
+                                            <option value="pedicure" data-price="300" >Pedicure - ₱300</option>
+                                            <option value="foot-spa" data-price="400" >Foot Spa - ₱400</option>
+                                            
+                                            <!-- Others -->
+                                            <option value="shampoo-blowdry" data-price="350" >Shampoo/Blowdry - ₱350 </option>
+                                            <option value="facial" data-price="450" >Facial - ₱450 </option>
+                                            <option value="shave" data-price="280" >Shave - ₱280 </option>
+                                            
+                                            <!-- Special Packages -->
+                                            <option value="package-haircut-spa" data-price="670" >Package: Haircut + Hair Spa - ₱670 </option>
+                                            <option value="package-haircut-amino" data-price="820" >Package: Haircut + Amino Mint - ₱820</option>
+                                            <option value="package-haircut-scalp" data-price="820" >Package: Haircut + Scalp Therapy - ₱820</option>
+                                            <option value="package-haircut-spa-facial" data-price="1070" >Package: Haircut + Hair Spa + Facial - ₱1,070</option>
+                                            <option value="package-haircut-amino-facial" data-price="1220" >Package: Haircut + Amino Mint + Facial - ₱1,220 </option>
+                                            <option value="package-haircut-scalp-facial" data-price="1220" >Package: Haircut + Scalp Therapy + Facial - ₱1,220 </option>
+                                            <option value="package-haircut-color-spa" data-price="1170" >Package: Haircut + Hair Color + Hair Spa - ₱1,170</option>
+                                            <option value="package-haircut-color-amino" data-price="1270" >Package: Haircut + Hair Color + Amino Mint - ₱1,270</option>
+                                            <option value="package-haircut-color-scalp" data-price="1270" >Package: Haircut + Hair Color + Scalp Therapy - ₱1,270</option>
+                                            <option value="package-mani-pedi" data-price="500">Package: Manicure + Pedicure - ₱500 </option>
+                                            <option value="package-foot-spa-pedicure" data-price="650" >Package: Foot Spa + Pedicure - ₱650</option>
+                                            <option value="package-foot-spa-mani-pedi" data-price="900" >Package: Foot Spa + Manicure + Pedicure - ₱900 </option>
+                                            <option value="package-haircut-color-schwarzkopf" data-price="1120" >Package: Haircut + Hair Color (Schwarzkopf) - ₱1,120</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                                    </div>
+                                    <button class="service-action-btn remove-service" data-assignment="1" data-service="1">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Assignment Summary -->
+                        <div class="assignment-summary">
+                            <div class="summary-content">
+                                <span class="summary-label">Services assigned:</span>
+                                <span class="services-count">0 services</span>
+                                <span class="services-total">₱0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="booking-summary">
+                <div class="summary-content">
+                    <h3>Booking Summary</h3>
+                    <div class="summary-assignments" id="summaryAssignments">
+                        <p class="no-selection">No staff assignments made</p>
+                    </div>
+                    <div class="summary-total">
+                        <span class="total-label">Total: </span>
+                        <span class="total-amount" id="totalAmount">₱0</span>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Get Number Button -->
+            <button class="get-number-btn" id="getNumberBtn" disabled>
+                <i class="fas fa-calendar-alt"></i>
+                Get Number
+            </button>
+        </div>
+    </div>
+
+    <!-- Date & Time Modal -->
+    <div id="dateTimeModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Select Date & Time</h3>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="datetime-section">
+                    <label class="datetime-label">Preferred Date</label>
+                    <input type="date" id="appointmentDate" class="datetime-input">
+                   <div class="date-note">
+                        <div class="date-note">
+                            <i class="fas fa-info-circle"></i>
+                            You can book from today up to 3 days ahead
+                        </div>
+                </div>
+                
+                <div class="datetime-section">
+                    <label class="datetime-label">Preferred Time</label>
+                    <div class="time-slots" id="timeSlots">
+                        <!-- Time slots will be generated dynamically -->
+                    </div>
+                </div>
+                
+                <div class="availability-note">
+                    <i class="fas fa-clock"></i>
+                    <span>Available slots are shown in green. Unavailable slots are grayed out.</span>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="confirm-btn" id="confirmBooking" disabled>
+                    <i class="fas fa-check"></i>
+                    Confirm Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div id="confirmationModal" class="modal-overlay">
+        <div class="modal-container success">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Booking Confirmed!</h3>
+            </div>
+            
+            <div class="modal-content">
+                <div class="booking-details">
+                    <div class="queue-number">
+                        <span class="queue-label">Your Queue Number:</span>
+                        <span class="queue-value" id="queueNumber">---</span>
+                        <span class="queue-type">ONLINE</span>
+                    </div>
+                    
+                    <div class="booking-info">
+                        <div class="info-row">
+                            <span class="info-label">Date:</span>
+                            <span class="info-value" id="confirmedDate">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Time:</span>
+                            <span class="info-value" id="confirmedTime">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Services:</span>
+                            <span class="info-value" id="confirmedServices">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Staff:</span>
+                            <span class="info-value" id="confirmedStaff">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Total:</span>
+                            <span class="info-value" id="confirmedTotal">---</span>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <h4>Instructions:</h4>
+                        <ul>
+                            <li>Take picture or screenshot of the number</li>
+                            <li>Enter the last three digit number in the store-in display</li>
+                            <li>Your number will be added to our digital queue</li>
+                            <li>Arrive 10 minutes before your appointment</li>
+                            <li>You'll receive SMS updates about your appointment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="done-btn" onclick="window.location.href='index.html'">
+                    <i class="fas fa-home"></i>
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+
+console.log("=== DEBUGGING BOOKING SELECTION ===");
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("1. DOM loaded");
+    
+    // Check if elements exist
+    const staffSelect = document.querySelector('.staff-select');
+    const serviceSelect = document.querySelector('.service-select');
+    const totalAmount = document.getElementById('totalAmount');
+    const getNumberBtn = document.getElementById('getNumberBtn');
+    
+    console.log("2. Elements found:");
+    console.log("   - Staff select:", staffSelect ? "YES" : "NO");
+    console.log("   - Service select:", serviceSelect ? "YES" : "NO");
+    console.log("   - Total amount:", totalAmount ? "YES" : "NO");
+    console.log("   - Get number button:", getNumberBtn ? "YES" : "NO");
+    
+    // Test if the main function exists
+    if (typeof initBookingSelection === 'function') {
+        console.log("3. initBookingSelection function exists: YES");
+        
+        // Call the function
+        try {
+            initBookingSelection();
+            console.log("4. initBookingSelection called successfully");
+        } catch (error) {
+            console.error("4. Error calling initBookingSelection:", error);
+        }
+    } else {
+        console.log("3. initBookingSelection function exists: NO");
+    }
+    
+    // Test event listeners manually
+    if (staffSelect) {
+        staffSelect.addEventListener('change', function() {
+            console.log("STAFF CHANGED:", this.value);
+        });
+    }
+    
+    if (serviceSelect) {
+        serviceSelect.addEventListener('change', function() {
+            console.log("SERVICE CHANGED:", this.value);
+            console.log("Service option data:", this.selectedOptions[0]);
+            const price = this.selectedOptions[0].dataset.price;
+            const duration = this.selectedOptions[0].dataset.duration;
+            console.log("Price:", price, "Duration:", duration);
+        });
+    }
+});
+</script>
+</body>
+</html>

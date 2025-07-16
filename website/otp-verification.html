@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code - GQ Barbershop</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Simple OTP Verification Page -->
+    <div class="simple-otp-page active">
+        <!-- Header -->
+        <div class="simple-header">
+            <div class="simple-logo">
+                <div class="simple-logo-text">GQ</div>
+            </div>
+            <button class="simple-back-btn" onclick="window.location.href='phone-verification.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="simple-otp-content">
+            <h1 class="simple-otp-title">Enter Code</h1>
+            <p class="simple-otp-subtitle">
+                We sent a 6-digit code to<br>
+                <span id="verificationPhoneDisplay"></span>
+            </p>
+            
+            <form id="otpVerificationForm">
+                <div class="simple-otp-inputs">
+                    <input type="text" class="simple-otp-input" maxlength="1" required>
+                    <input type="text" class="simple-otp-input" maxlength="1" required>
+                    <input type="text" class="simple-otp-input" maxlength="1" required>
+                    <input type="text" class="simple-otp-input" maxlength="1" required>
+                    <input type="text" class="simple-otp-input" maxlength="1" required>
+                    <input type="text" class="simple-otp-input" maxlength="1" required>
+                </div>
+                
+                <button type="submit" class="simple-verify-btn" id="verifyCodeBtn">
+                    <span class="btn-text-simple">Verify Code</span>
+                    <span class="btn-loading-simple" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Verifying...
+                    </span>
+                </button>
+            </form>
+
+            <div class="simple-resend-section">
+                <p>Didn't receive the code?</p>
+                <button class="simple-resend-btn" id="resendCodeBtn">
+                    Resend Code
+                </button>
+                <div class="simple-timer" id="resendTimer" style="display: none;">
+                    Resend in <span id="timerCount">30</span>s
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initSimpleOTPVerification();
+        });
+
+        function initSimpleOTPVerification() {
+            // Get phone number from URL params or localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const phoneNumber = urlParams.get('phone') || localStorage.getItem('verificationPhone');
+            const verificationCode = localStorage.getItem('verificationCode');
+            
+            // Display masked phone number
+            const phoneDisplay = document.getElementById('verificationPhoneDisplay');
+            if (phoneNumber && phoneDisplay) {
+                const maskedPhone = phoneNumber.replace(/(\+63)(\d{3})(\d{3})(\d{4})/, '$1 $2 XXX $4');
+                phoneDisplay.textContent = maskedPhone;
+            }
+
+            // Initialize OTP inputs
+            initSimpleOTPInputs();
+            
+            // Focus on first input
+            const firstInput = document.querySelector('.simple-otp-input');
+            if (firstInput) firstInput.focus();
+            
+            // Start resend timer
+            startSimpleResendTimer();
+            
+            // Form submission
+            const form = document.getElementById('otpVerificationForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const otpInputs = document.querySelectorAll('.simple-otp-input');
+                const otp = Array.from(otpInputs).map(input => input.value).join('');
+                
+                if (otp.length === 6) {
+                    verifySimpleOTP(otp, verificationCode);
+                }
+            });
+            
+            // Resend functionality
+            const resendBtn = document.getElementById('resendCodeBtn');
+            resendBtn.addEventListener('click', () => {
+                const cleanPhone = phoneNumber ? phoneNumber.replace(/\D/g, '') : '';
+                if (cleanPhone) {
+                    resendVerificationCode(cleanPhone);
+                }
+            });
+        }
+
+        function initSimpleOTPInputs() {
+            const otpInputs = document.querySelectorAll('.simple-otp-input');
+            
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    
+                    // Only allow numbers
+                    if (!/^\d$/.test(value) && value !== '') {
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    if (value) {
+                        input.classList.add('filled');
+                        
+                        // Auto-focus next input
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        }
+                        
+                        // Auto-submit when all filled
+                        const allFilled = Array.from(otpInputs).every(inp => inp.value !== '');
+                        if (allFilled) {
+                            setTimeout(() => {
+                                document.getElementById('otpVerificationForm').dispatchEvent(new Event('submit'));
+                            }, 100);
+                        }
+                    } else {
+                        input.classList.remove('filled');
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    // Handle backspace
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                    
+                    // Handle paste
+                    if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        navigator.clipboard.readText().then(text => {
+                            const digits = text.replace(/\D/g, '').substring(0, 6);
+                            digits.split('').forEach((digit, idx) => {
+                                if (otpInputs[idx]) {
+                                    otpInputs[idx].value = digit;
+                                    otpInputs[idx].classList.add('filled');
+                                }
+                            });
+                            
+                            if (digits.length === 6) {
+                                setTimeout(() => {
+                                    document.getElementById('otpVerificationForm').dispatchEvent(new Event('submit'));
+                                }, 100);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function verifySimpleOTP(otp, correctCode) {
+            const verifyBtn = document.getElementById('verifyCodeBtn');
+            const btnText = verifyBtn?.querySelector('.btn-text-simple');
+            const btnLoading = verifyBtn?.querySelector('.btn-loading-simple');
+            const otpInputs = document.querySelectorAll('.simple-otp-input');
+            
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'flex';
+            }
+            
+            // Simulate verification
+            setTimeout(() => {
+                if (otp === correctCode || otp === '123456') { // 123456 for demo
+                    // Success - animate button
+                    verifyBtn.classList.add('verification-success');
+                    btnLoading.innerHTML = '<i class="fas fa-check"></i> Verified!';
+                    
+                    // Store verified phone number
+                    const phoneNumber = localStorage.getItem('verificationPhone');
+                    localStorage.setItem('verifiedPhone', phoneNumber);
+                    
+                    setTimeout(() => {
+                        // Redirect to booking selection page
+                        window.location.href = 'booking-selection.html';
+                    }, 1500);
+                } else {
+                    // Error - show validation error
+                    otpInputs.forEach(input => {
+                        input.classList.add('error');
+                        input.value = '';
+                    });
+                    
+                    showErrorToast('Invalid verification code. Please try again.');
+                    
+                    setTimeout(() => {
+                        otpInputs.forEach(input => {
+                            input.classList.remove('error');
+                        });
+                        otpInputs[0].focus();
+                    }, 1000);
+                    
+                    if (verifyBtn) {
+                        verifyBtn.disabled = false;
+                        btnText.style.display = 'block';
+                        btnLoading.style.display = 'none';
+                    }
+                }
+            }, 1500);
+        }
+
+        function showErrorToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'error-toast';
+            toast.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            toast.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: #e74c3c;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                z-index: 3000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function resendVerificationCode(phoneNumber) {
+            const resendBtn = document.getElementById('resendCodeBtn');
+            const originalText = resendBtn.innerHTML;
+            
+            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            resendBtn.disabled = true;
+            
+            // Generate new code
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log('New verification code:', verificationCode);
+            localStorage.setItem('verificationCode', verificationCode);
+            
+            setTimeout(() => {
+                resendBtn.innerHTML = originalText;
+                resendBtn.disabled = false;
+                showSuccessToast('New verification code sent!');
+                startSimpleResendTimer();
+            }, 2000);
+        }
+
+        function showSuccessToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            toast.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: #27ae60;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                z-index: 3000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function startSimpleResendTimer() {
+            const resendBtn = document.getElementById('resendCodeBtn');
+            const resendTimer = document.getElementById('resendTimer');
+            const timerCount = document.getElementById('timerCount');
+            
+            if (!resendBtn || !resendTimer || !timerCount) return;
+            
+            let timeLeft = 30;
+            resendBtn.disabled = true;
+            resendBtn.style.display = 'none';
+            resendTimer.style.display = 'block';
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerCount.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendBtn.disabled = false;
+                    resendBtn.style.display = 'inline-flex';
+                    resendTimer.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        // Add CSS animations if not already added
+        if (!document.querySelector('#otp-animations')) {
+            const style = document.createElement('style');
+            style.id = 'otp-animations';
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                .simple-otp-input.error {
+                    background: rgba(231, 76, 60, 0.2) !important;
+                    border: 2px solid #e74c3c !important;
+                    animation: shake 0.5s ease-in-out;
+                }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
+                }
+                .verification-success {
+                    background: #4CAF50 !important;
+                    animation: successPulse 0.6s ease-out;
+                }
+                @keyframes successPulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+</body>
+</html>

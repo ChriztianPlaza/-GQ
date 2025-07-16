@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Verification - GQ Barbershop</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Simple Phone Verification Page -->
+    <div class="simple-verification-page active">
+        <!-- Header -->
+        <div class="simple-header">
+            <div class="simple-logo">
+                <div class="simple-logo-text">GQ</div>
+            </div>
+            <button class="simple-back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="simple-content">
+            <h1 class="simple-title">Enter Your Number</h1>
+            
+            <form id="phoneVerificationForm">
+                <input 
+                    type="tel" 
+                    id="phoneNumber" 
+                    class="simple-phone-input"
+                    placeholder="+63 9XX XXX XXXX" 
+                    maxlength="16"
+                    required
+                >
+                
+                <button type="submit" class="simple-send-btn" id="sendCodeBtn" disabled>
+                    <span class="btn-text-simple">Send Code</span>
+                    <span class="btn-loading-simple" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Sending...
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initSimplePhoneVerification();
+        });
+
+        function initSimplePhoneVerification() {
+            const phoneInput = document.getElementById('phoneNumber');
+            const sendBtn = document.getElementById('sendCodeBtn');
+            const form = document.getElementById('phoneVerificationForm');
+
+            // Focus on phone input
+            phoneInput.focus();
+
+            // Phone input formatting and validation
+            phoneInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Handle Philippine mobile format
+                // Allow: 9XXXXXXXXX (without +63) or 639XXXXXXXXX (with 63)
+                if (value.length > 0) {
+                    // If user starts typing 9, prepend 63
+                    if (value.startsWith('9') && value.length <= 10) {
+                        // Keep as 9XXXXXXXXX format, will add +63 on submit
+                        if (value.length > 10) {
+                            value = value.substring(0, 10);
+                        }
+                    }
+                    // If user types 639, keep it as is
+                    else if (value.startsWith('63') && value.length <= 12) {
+                        if (value.length > 12) {
+                            value = value.substring(0, 12);
+                        }
+                    }
+                    // If user types other format, try to fix it
+                    else if (!value.startsWith('9') && !value.startsWith('63')) {
+                        // Remove any leading digits that aren't 9 or 63
+                        value = value.replace(/^[^9]/, '');
+                        if (value.startsWith('9') && value.length > 10) {
+                            value = value.substring(0, 10);
+                        }
+                    }
+                }
+                
+                // Format the display
+                let formatted = '';
+                if (value.length > 0) {
+                    if (value.startsWith('63')) {
+                        // Format: +63 9XX XXX XXXX
+                        formatted = '+63';
+                        if (value.length > 2) {
+                            formatted += ' ' + value.substring(2, 3);
+                            if (value.length > 3) {
+                                formatted += value.substring(3, 5);
+                                if (value.length > 5) {
+                                    formatted += ' ' + value.substring(5, 8);
+                                    if (value.length > 8) {
+                                        formatted += ' ' + value.substring(8, 12);
+                                    }
+                                }
+                            }
+                        }
+                    } else if (value.startsWith('9')) {
+                        // Format: +63 9XX XXX XXXX (auto-prepend +63)
+                        formatted = '+63 ' + value.substring(0, 1);
+                        if (value.length > 1) {
+                            formatted += value.substring(1, 3);
+                            if (value.length > 3) {
+                                formatted += ' ' + value.substring(3, 6);
+                                if (value.length > 6) {
+                                    formatted += ' ' + value.substring(6, 10);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                e.target.value = formatted;
+                
+                // Validate - should be 10 digits starting with 9, or 12 digits starting with 639
+                let isValid = false;
+                if (value.startsWith('9') && value.length === 10) {
+                    isValid = true;
+                } else if (value.startsWith('639') && value.length === 12) {
+                    isValid = true;
+                }
+                
+                sendBtn.disabled = !isValid;
+                sendBtn.style.opacity = isValid ? '1' : '0.5';
+            });
+
+            // Form submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const phoneValue = phoneInput.value.replace(/\D/g, '');
+                let finalPhoneNumber = '';
+                
+                // Handle different input formats
+                if (phoneValue.startsWith('639') && phoneValue.length === 12) {
+                    finalPhoneNumber = phoneValue; // Already in correct format
+                } else if (phoneValue.startsWith('9') && phoneValue.length === 10) {
+                    finalPhoneNumber = '63' + phoneValue; // Add 63 prefix
+                } else {
+                    // Try to extract valid number
+                    const match = phoneValue.match(/9\d{9}/);
+                    if (match) {
+                        finalPhoneNumber = '63' + match[0];
+                    }
+                }
+                
+                if (finalPhoneNumber.length === 12 && finalPhoneNumber.startsWith('639')) {
+                    sendVerificationCode(finalPhoneNumber);
+                } else {
+                    alert('Please enter a valid Philippine mobile number');
+                }
+            });
+        }
+
+        function sendVerificationCode(phoneNumber) {
+            const sendBtn = document.getElementById('sendCodeBtn');
+            const btnText = sendBtn.querySelector('.btn-text-simple');
+            const btnLoading = sendBtn.querySelector('.btn-loading-simple');
+            
+            sendBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'flex';
+            
+            // Generate and store verification code
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log('Verification code:', verificationCode);
+            
+            localStorage.setItem('verificationPhone', '+' + phoneNumber);
+            localStorage.setItem('verificationCode', verificationCode);
+            
+            // Simulate sending
+            setTimeout(() => {
+                window.location.href = `otp-verification.html?phone=${encodeURIComponent('+' + phoneNumber)}`;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
