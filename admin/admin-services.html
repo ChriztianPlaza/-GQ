@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GQ Barbershop - Services Management</title>
+  <link rel="stylesheet" href="admin-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="gq-logo.jpg" alt="GQ Logo" class="side-logo" />
+      <span class="brand-title">GQ BARBERSHOP ADMIN</span>
+    </div>
+    <nav class="dashboard-nav">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="admin-queue.html">Queue Management</a>
+      <a href="admin-bookings.html">Bookings</a>
+      <a href="admin-barbers.html">Staff Tracker</a>
+      <a href="admin-services.html" class="active">Services</a>
+      <a href="admin-discounts.html">Discounts</a>
+      <a href="admin-reports.html">Reports</a>
+    </nav>
+    <div class="profile-section">
+      <div class="profile-dropdown">
+        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+        <div class="dropdown-menu">
+          <a href="admin-profile.html">Profile</a>
+          <a href="admin-settings.html">Settings</a>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="page-header">
+      <h1 class="page-title">Services Management</h1>
+      <div class="page-actions">
+        <button class="btn btn-primary" onclick="addService()">
+          <i class="fas fa-plus"></i>
+          Add New Service
+        </button>
+        <button class="btn btn-secondary" onclick="exportServices()">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+      </div>
+    </div>
+
+<!-- Service Categories and Table Container -->
+<div class="services-layout-container">
+  <!-- Left Sidebar - Service Categories -->
+  <div class="categories-sidebar">
+    <div class="categories-section">
+      <h2>Service Categories</h2>
+      <div class="category-filters">
+        <button class="category-btn active" data-category="all" onclick="filterByCategory('all')">
+          All Services
+        </button>
+        <button class="category-btn" data-category="mens-grooming" onclick="filterByCategory('mens-grooming')">
+          <i class="fas fa-cut"></i>
+          Men's Grooming
+        </button>
+        <button class="category-btn" data-category="treatment-services" onclick="filterByCategory('treatment-services')">
+          <i class="fas fa-spa"></i>
+          Treatment Services
+        </button>
+        <button class="category-btn" data-category="hand-foot-care" onclick="filterByCategory('hand-foot-care')">
+          <i class="fas fa-hand-sparkles"></i>
+          Hand & Foot Care
+        </button>
+        <button class="category-btn" data-category="others" onclick="filterByCategory('others')">
+          <i class="fas fa-ellipsis-h"></i>
+          Others
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Content - Services Table -->
+  <div class="services-content">
+    <!-- Services Table -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>All Services</h2>
+        <div class="table-actions">
+          <input type="text" placeholder="Search services..." class="search-input" id="services-search">
+          <select class="filter-select" id="price-filter" onchange="filterServices()">
+            <option value="all">All Prices</option>
+            <option value="low">Under ₱400</option>
+            <option value="medium">₱400 - ₱800</option>
+            <option value="high">Over ₱800</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table" id="services-table">
+          <thead>
+            <tr>
+              <th>Service Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Services data will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Service Packages -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Popular Packages</h2>
+        <button class="btn btn-primary" onclick="createPackage()">
+          <i class="fas fa-plus"></i>
+          Create Package
+        </button>
+      </div>
+      
+      <div class="packages-grid" id="packages-grid">
+        <!-- Service packages will be loaded here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Service Modal -->
+  <div id="service-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="service-modal-title">Add New Service</h3>
+        <button class="modal-close" onclick="closeServiceModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <form id="service-form">
+          <div class="form-group">
+            <label for="service-name">Service Name</label>
+            <input type="text" id="service-name" required placeholder="Enter service name">
+          </div>
+          <div class="form-group">
+            <label for="service-price">Price (₱)</label>
+            <input type="number" id="service-price" required min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="service-category">Category</label>
+            <select id="service-category" required>
+              <option value="">Select category</option>
+              <option value="mens-grooming">Men's Grooming</option>
+              <option value="treatment-services">Treatment Services</option>
+              <option value="hand-foot-care">Hand & Foot Care</option>
+              <option value="others">Others</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeServiceModal()">Cancel</button>
+        <button type="submit" form="service-form" class="btn btn-primary">Save Service</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin-script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!checkAuth()) {
+        window.location.href = 'admin-index.html';
+        return;
+      }
+      initServicesManagement();
+    });
+</script>
+
+</body>
+</html>

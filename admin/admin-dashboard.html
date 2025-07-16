@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GQ Barbershop - Dashboard</title>
+  <link rel="stylesheet" href="admin-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="gq-logo.jpg" alt="GQ Logo" class="side-logo" />
+      <span class="brand-title">GQ BARBERSHOP ADMIN</span>
+    </div>
+    <nav class="dashboard-nav">
+      <a href="admin-dashboard.html" class="active">Dashboard</a>
+      <a href="admin-queue.html">Queue Management</a>
+      <a href="admin-bookings.html">Bookings</a>
+      <a href="admin-barbers.html">Staff Tracker</a>
+      <a href="admin-services.html">Services</a>
+      <a href="admin-discounts.html">Discounts</a>
+      <a href="admin-reports.html">Reports</a>
+    </nav>
+    <div class="profile-section">
+      <div class="profile-dropdown">
+        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+        <div class="dropdown-menu">
+          <a href="admin-profile.html">Profile</a>
+          <a href="admin-settings.html">Settings</a>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="dashboard-header-section">
+      <h1 class="dashboard-title">Dashboard Overview</h1>
+      <div class="date-time-display">
+        <span id="current-date-time"></span>
+      </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card walk-ins">
+        <div class="metric-icon">
+          <i class="fas fa-walking"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Today's Walk-ins</h3>
+          <div class="metric-number" id="walkins-count">0</div>
+          <div class="metric-change positive">+12% from yesterday</div>
+        </div>
+      </div>
+
+      <div class="metric-card appointments">
+        <div class="metric-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Online Appointments</h3>
+          <div class="metric-number" id="appointments-count">0</div>
+          <div class="metric-change positive">+8% from yesterday</div>
+        </div>
+      </div>
+
+      <div class="metric-card revenue">
+        <div class="metric-icon">
+          <i class="fas fa-peso-sign"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Today's Revenue</h3>
+          <div class="metric-number" id="revenue-count">₱0</div>
+          <div class="metric-change positive">+15% from yesterday</div>
+        </div>
+      </div>
+
+      <div class="metric-card staff">
+        <div class="metric-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Active Staff</h3>
+          <div class="metric-number" id="staff-count">0</div>
+          <div class="metric-status">8 total staff</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="actions-grid">
+        <button class="action-btn" onclick="openQuickAddCustomer()">
+          <i class="fas fa-user-plus"></i>
+          Add Walk-in Customer
+        </button>
+        <button class="action-btn" onclick="viewQueue()">
+          <i class="fas fa-list"></i>
+          View Current Queue
+        </button>
+        <button class="action-btn" onclick="updateStaffStatus()">
+          <i class="fas fa-user-edit"></i>
+          Update Staff Status
+        </button>
+        <button class="action-btn" onclick="generateReport()">
+          <i class="fas fa-chart-bar"></i>
+          Generate Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Current Queue Overview -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Current Queue Status</h2>
+        <a href="admin-queue.html" class="view-all-link">View All</a>
+      </div>
+      <div class="queue-overview">
+        <div class="queue-stats">
+          <div class="stat-item">
+            <span class="stat-label">Waiting</span>
+            <span class="stat-value" id="queue-waiting">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">In Service</span>
+            <span class="stat-value" id="queue-serving">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Avg Wait Time</span>
+            <span class="stat-value" id="avg-wait-time">--</span>
+          </div>
+        </div>
+        <div class="queue-list-preview" id="queue-preview">
+          <!-- Queue items will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff Status Overview -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Staff Status</h2>
+        <a href="admin-barbers.html" class="view-all-link">Manage Staff</a>
+      </div>
+      <div class="staff-grid" id="staff-overview">
+        <!-- Staff status cards will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Recent Activity</h2>
+        <a href="admin-reports.html" class="view-all-link">View Reports</a>
+      </div>
+      <div class="activity-list" id="recent-activity">
+        <!-- Recent activities will be loaded here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Quick Add Customer Modal -->
+  <div id="quick-add-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Add Walk-in Customer</h3>
+        <button class="modal-close" onclick="closeQuickAddModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <form id="quick-add-form">
+          <div class="form-group">
+            <label for="customer-name">Customer Name (Optional)</label>
+            <input type="text" id="customer-name" placeholder="Enter customer name">
+          </div>
+          <div class="form-group">
+            <label for="customer-service">Service</label>
+            <select id="customer-service" required>
+              <option value="">Select a service</option>
+              <!-- Services will be loaded dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="assigned-staff">Assign Staff</label>
+            <select id="assigned-staff" required>
+              <option value="">Select staff member</option>
+              <!-- Staff will be loaded dynamically -->
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeQuickAddModal()">Cancel</button>
+        <button type="submit" form="quick-add-form" class="btn btn-primary">Add to Queue</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin-script.js"></script>
+  <script>
+    // Initialize dashboard when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!checkAuth()) {
+        window.location.href = 'admin-index.html';
+        return;
+      }
+      initDashboard();
+    });
+  </script>
+</body>
+</html>

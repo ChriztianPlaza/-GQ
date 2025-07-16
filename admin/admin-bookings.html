@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GQ Barbershop - Bookings Management</title>
+  <link rel="stylesheet" href="admin-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="gq-logo.jpg" alt="GQ Logo" class="side-logo" />
+      <span class="brand-title">GQ BARBERSHOP ADMIN</span>
+    </div>
+    <nav class="dashboard-nav">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="admin-queue.html">Queue Management</a>
+      <a href="admin-bookings.html" class="active">Bookings</a>
+      <a href="admin-barbers.html">Staff Tracker</a>
+      <a href="admin-services.html">Services</a>
+      <a href="admin-discounts.html">Discounts</a>
+      <a href="admin-reports.html">Reports</a>
+    </nav>
+    <div class="profile-section">
+      <div class="profile-dropdown">
+        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+        <div class="dropdown-menu">
+          <a href="admin-profile.html">Profile</a>
+          <a href="admin-settings.html">Settings</a>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="page-header">
+      <h1 class="page-title">Online Bookings</h1>
+      <div class="page-actions">
+        <button class="btn btn-primary" onclick="exportBookings()">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+        <button class="btn btn-secondary" onclick="refreshBookings()">
+          <i class="fas fa-sync-alt"></i>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Booking Statistics -->
+    <div class="metrics-grid">
+      <div class="metric-card total-bookings">
+        <div class="metric-icon">
+          <i class="fas fa-calendar"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Total Bookings</h3>
+          <div class="metric-number" id="total-bookings">0</div>
+          <div class="metric-status">All time</div>
+        </div>
+      </div>
+
+      <div class="metric-card pending-bookings">
+        <div class="metric-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Pending Today</h3>
+          <div class="metric-number" id="pending-bookings">0</div>
+          <div class="metric-status">Awaiting check-in</div>
+        </div>
+      </div>
+
+      <div class="metric-card confirmed-bookings">
+        <div class="metric-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Confirmed Today</h3>
+          <div class="metric-number" id="confirmed-bookings">0</div>
+          <div class="metric-status">Checked in</div>
+        </div>
+      </div>
+
+      <div class="metric-card booking-revenue">
+        <div class="metric-icon">
+          <i class="fas fa-peso-sign"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Booking Revenue</h3>
+          <div class="metric-number" id="booking-revenue">₱0</div>
+          <div class="metric-status">Today's earnings</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="filter-section">
+      <div class="filter-group">
+        <label>Date Range:</label>
+        <input type="date" id="start-date" class="date-input">
+        <span>to</span>
+        <input type="date" id="end-date" class="date-input">
+      </div>
+      <div class="filter-group">
+        <label>Status:</label>
+        <select id="status-filter" onchange="filterBookings()">
+          <option value="all">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="checked-in">Checked In</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <button class="btn btn-primary" onclick="applyDateFilter()">Apply Filter</button>
+        <button class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>All Bookings</h2>
+        <div class="table-actions">
+          <input type="text" placeholder="Search bookings..." class="search-input" id="bookings-search">
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table" id="bookings-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Customer</th>
+              <th>Date & Time</th>
+              <th>Services</th>
+              <th>Staff</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Bookings data will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Today's Schedule</h2>
+      </div>
+      
+      <div class="schedule-container" id="today-schedule">
+        <!-- Today's appointments will be loaded here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Booking Details Modal -->
+  <div id="booking-details-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Booking Details</h3>
+        <button class="modal-close" onclick="closeBookingDetailsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div id="booking-details-content">
+          <!-- Booking details will be loaded here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" onclick="confirmBooking()">
+          <i class="fas fa-check"></i>
+          Confirm
+        </button>
+        <button class="btn btn-warning" onclick="rescheduleBooking()">
+          <i class="fas fa-calendar-alt"></i>
+          Reschedule
+        </button>
+        <button class="btn btn-danger" onclick="cancelBooking()">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin-script.js"></script>
+  <script>
+    let filteredBookings = [];
+    let selectedBooking = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!checkAuth()) {
+        window.location.href = 'admin-index.html';
+        return;
+      }
+      initBookingsManagement();
+      setupBookingFilters();
+    });
+
+    function initBookingsManagement() {
+      loadBookingsData();
+      updateBookingMetrics();
+      renderBookingsTable();
+      renderTodaySchedule();
+      setupSearchListener();
+    }
+
+    function updateBookingMetrics() {
+      const today = new Date().toDateString();
+      const totalBookings = bookingsData.length;
+      
+      const todayBookings = bookingsData.filter(booking => {
+        return booking.date && new Date(booking.date).toDateString() === today;
+      });
+      
+      const pendingToday = todayBookings.filter(b => b.status === 'confirmed').length;
+      const confirmedToday = todayBookings.filter(b => b.status === 'checked-in').length;
+      const revenueToday = todayBookings
+        .filter(b => b.status === 'completed')
+        .reduce((sum, b) => sum + (b.total || 0), 0);
+
+      updateMetricElement('total-bookings', totalBookings);
+      updateMetricElement('pending-bookings', pendingToday);
+      updateMetricElement('confirmed-bookings', confirmedToday);
+      updateMetricElement('booking-revenue', `₱${revenueToday.toLocaleString()}`);
+    }
+
+    function renderBookingsTable() {
+      const tbody = document.querySelector('#bookings-table tbody');
+      if (!tbody) return;
+
+      const dataToRender = filteredBookings.length > 0 ? filteredBookings : bookingsData;
+
+      if (dataToRender.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center text-gray-medium" style="padding: 30px 0;">
+              No bookings found.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = dataToRender.map(booking => `
+        <tr>
+          <td><strong>${booking.queueNumber || booking.id}</strong></td>
+          <td>
+            <div>
+              <div class="customer-name">${booking.customerName || 'Online Customer'}</div>
+              <div class="customer-phone">${booking.phone || 'No phone'}</div>
+            </div>
+          </td>
+          <td>
+            <div>
+              <div class="booking-date">${formatDate(booking.date || booking.timestamp)}</div>
+              <div class="booking-time">${booking.time || formatTime(booking.timestamp)}</div>
+            </div>
+          </td>
+          <td>
+            <div class="services-list">
+              ${getServiceNames(booking.services)}
+            </div>
+          </td>
+          <td>${booking.staff || 'Unassigned'}</td>
+          <td><strong>₱${booking.total || 0}</strong></td>
+          <td>
+            <span class="status-badge ${booking.status}">
+              ${booking.status || 'pending'}
+            </span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <button class="btn btn-primary btn-sm" onclick="viewBookingDetails('${booking.id}')">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button class="btn btn-success btn-sm" onclick="checkInBooking('${booking.id}')">
+                <i class="fas fa-check"></i> Check In
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderTodaySchedule() {
+      const container = document.getElementById('today-schedule');
+      if (!container) return;
+
+      const today = new Date().toDateString();
+      const todayBookings = bookingsData.filter(booking => {
+        return booking.date && new Date(booking.date).toDateString() === today;
+      }).sort((a, b) => {
+        const timeA = a.time || '00:00';
+        const timeB = b.time || '00:00';
+        return timeA.localeCompare(timeB);
+      });
+
+      if (todayBookings.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-medium">No appointments scheduled for today</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="schedule-timeline">
+          ${todayBookings.map(booking => `
+            <div class="schedule-item ${booking.status}">
+              <div class="schedule-time">${booking.time || formatTime(booking.timestamp)}</div>
+              <div class="schedule-details">
+                <div class="customer-name">${booking.customerName || 'Online Customer'}</div>
+                <div class="service-name">${getServiceNames(booking.services)}</div>
+                <div class="staff-name">Staff: ${booking.staff || 'Unassigned'}</div>
+              </div>
+              <div class="schedule-status">
+                <span class="status-badge ${booking.status}">${booking.status}</span>
+              </div>
+              <div class="schedule-actions">
+                <button class="btn-icon" onclick="viewBookingDetails('${booking.id}')" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                ${booking.status === 'confirmed' ? `
+                  <button class="btn-icon" onclick="checkInBooking('${booking.id}')" title="Check In">
+                    <i class="fas fa-check"></i>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function setupBookingFilters() {
+      const today = new Date();
+      const endDate = new Date();
+      endDate.setDate(today.getDate() + 7);
+
+      document.getElementById('start-date').value = today.toISOString().split('T')[0];
+      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    }
+
+    function setupSearchListener() {
+      const searchInput = document.getElementById('bookings-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', debounce(function(e) {
+          const query = e.target.value;
+          filteredBookings = search(query, bookingsData, ['queueNumber', 'customerName', 'phone', 'staff']);
+          renderBookingsTable();
+        }, 300));
+      }
+    }
+
+    function applyDateFilter() {
+      const startDate = new Date(document.getElementById('start-date').value);
+      const endDate = new Date(document.getElementById('end-date').value);
+      
+      filteredBookings = bookingsData.filter(booking => {
+        if (!booking.date) return false;
+        const bookingDate = new Date(booking.date);
+        return bookingDate >= startDate && bookingDate <= endDate;
+      });
+      
+      renderBookingsTable();
+      showNotification('Date filter applied', 'success');
+    }
+
+    function clearFilters() {
+      filteredBookings = [];
+      document.getElementById('status-filter').value = 'all';
+      document.getElementById('bookings-search').value = '';
+      setupBookingFilters();
+      renderBookingsTable();
+      showNotification('Filters cleared', 'info');
+    }
+
+    function filterBookings() {
+      const statusFilter = document.getElementById('status-filter').value;
+      
+      if (statusFilter === 'all') {
+        filteredBookings = [];
+      } else {
+        filteredBookings = bookingsData.filter(booking => booking.status === statusFilter);
+      }
+      
+      renderBookingsTable();
+    }
+
+    function viewBookingDetails(bookingId) {
+      const booking = bookingsData.find(b => b.id === bookingId || b.queueNumber === bookingId);
+      if (!booking) return;
+
+      selectedBooking = booking;
+      const modal = document.getElementById('booking-details-modal');
+      const content = document.getElementById('booking-details-content');
+
+      content.innerHTML = `
+        <div class="booking-detail-card">
+          <div class="detail-section">
+            <h4>Booking Information</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Booking ID:</label>
+                <span>${booking.queueNumber || booking.id}</span>
+              </div>
+              <div class="detail-item">
+                <label>Status:</label>
+                <span class="status-badge ${booking.status}">${booking.status}</span>
+              </div>
+              <div class="detail-item">
+                <label>Date:</label>
+                <span>${formatDate(booking.date || booking.timestamp)}</span>
+              </div>
+              <div class="detail-item">
+                <label>Time:</label>
+                <span>${booking.time || formatTime(booking.timestamp)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Customer Information</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Name:</label>
+                <span>${booking.customerName || 'Online Customer'}</span>
+              </div>
+              <div class="detail-item">
+                <label>Phone:</label>
+                <span>${booking.phone || 'Not provided'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Service Details</h4>
+            <div class="services-detail">
+              ${Array.isArray(booking.services) ? booking.services.map(service => `
+                <div class="service-item-detail">
+                  <span class="service-name">${service.serviceName || service.name || service}</span>
+                  <span class="service-price">₱${service.price || 0}</span>
+                </div>
+              `).join('') : `<div class="service-item-detail">${booking.services || 'No services'}</div>`}
+            </div>
+            <div class="detail-item">
+              <label>Assigned Staff:</label>
+              <span>${booking.staff || 'Unassigned'}</span>
+            </div>
+            <div class="detail-item">
+              <label>Total Amount:</label>
+              <span class="total-amount">₱${booking.total || 0}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      modal.classList.add('active');
+    }
+
+    function closeBookingDetailsModal() {
+      const modal = document.getElementById('booking-details-modal');
+      modal.classList.remove('active');
+      selectedBooking = null;
+    }
+
+    function checkInBooking(bookingId) {
+      const booking = bookingsData.find(b => b.id === bookingId || b.queueNumber === bookingId);
+      if (!booking) return;
+
+      if (confirm(`Check in ${booking.customerName || 'customer'} for their appointment?`)) {
+        booking.status = 'checked-in';
+        updateQueueItemInStorage(booking);
+        
+        // Add to current queue if not already there
+        if (!queueData.find(q => q.id === booking.id)) {
+          queueData.push({
+            ...booking,
+            status: 'waiting'
+          });
+        }
+        
+        refreshBookings();
+        showNotification('Customer checked in successfully', 'success');
+      }
+    }
+
+    function confirmBooking() {
+      if (!selectedBooking) return;
+
+      selectedBooking.status = 'confirmed';
+      updateQueueItemInStorage(selectedBooking);
+      closeBookingDetailsModal();
+      refreshBookings();
+      showNotification('Booking confirmed', 'success');
+    }
+
+    function rescheduleBooking() {
+      if (!selectedBooking) return;
+
+      const newDate = prompt('Enter new date (YYYY-MM-DD):', selectedBooking.date);
+      const newTime = prompt('Enter new time (HH:MM):', selectedBooking.time);
+      
+      if (newDate && newTime) {
+        selectedBooking.date = newDate;
+        selectedBooking.time = newTime;
+        selectedBooking.status = 'rescheduled';
+        updateQueueItemInStorage(selectedBooking);
+        closeBookingDetailsModal();
+        refreshBookings();
+        showNotification('Booking rescheduled', 'success');
+      }
+    }
+
+    function cancelBooking() {
+      if (!selectedBooking) return;
+
+      if (confirm(`Are you sure you want to cancel this booking for ${selectedBooking.customerName}?`)) {
+        selectedBooking.status = 'cancelled';
+        updateQueueItemInStorage(selectedBooking);
+        closeBookingDetailsModal();
+        refreshBookings();
+        showNotification('Booking cancelled', 'info');
+      }
+    }
+
+    function refreshBookings() {
+      loadBookingsData();
+      updateBookingMetrics();
+      renderBookingsTable();
+      renderTodaySchedule();
+      showNotification('Bookings refreshed', 'success');
+    }
+
+    function exportBookings() {
+      const csvData = bookingsData.map(booking => ({
+        'Booking ID': booking.queueNumber || booking.id,
+        'Customer Name': booking.customerName || 'Online Customer',
+        'Phone': booking.phone || '',
+        'Date': booking.date || formatDate(booking.timestamp),
+        'Time': booking.time || formatTime(booking.timestamp),
+        'Services': getServiceNames(booking.services),
+        'Staff': booking.staff || '',
+        'Amount': booking.total || 0,
+        'Status': booking.status || ''
+      }));
+      
+      exportToCSV(csvData, 'gq-barbershop-bookings.csv');
+      showNotification('Bookings exported successfully', 'success');
+    }
+
+    // Make functions globally available
+    window.viewBookingDetails = viewBookingDetails;
+    window.closeBookingDetailsModal = closeBookingDetailsModal;
+    window.checkInBooking = checkInBooking;
+    window.confirmBooking = confirmBooking;
+    window.rescheduleBooking = rescheduleBooking;
+    window.cancelBooking = cancelBooking;
+    window.refreshBookings = refreshBookings;
+    window.exportBookings = exportBookings;
+    window.applyDateFilter = applyDateFilter;
+    window.clearFilters = clearFilters;
+    window.filterBookings = filterBookings;
+  </script>
+</body>
+</html>

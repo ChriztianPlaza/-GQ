@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GQ Barbershop - Reports & Analytics</title>
+  <link rel="stylesheet" href="admin-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="gq-logo.jpg" alt="GQ Logo" class="side-logo" />
+      <span class="brand-title">GQ BARBERSHOP ADMIN</span>
+    </div>
+    <nav class="dashboard-nav">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="admin-queue.html">Queue Management</a>
+      <a href="admin-bookings.html">Bookings</a>
+      <a href="admin-barbers.html">Staff Tracker</a>
+      <a href="admin-services.html">Services</a>
+      <a href="admin-discounts.html">Discounts</a>
+      <a href="admin-reports.html" class="active">Reports</a>
+    </nav>
+    <div class="profile-section">
+      <div class="profile-dropdown">
+        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+        <div class="dropdown-menu">
+          <a href="admin-profile.html">Profile</a>
+          <a href="admin-settings.html">Settings</a>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="page-header">
+      <h1 class="page-title">Reports & Analytics</h1>
+      <div class="page-actions">
+        <select id="report-period" class="filter-select" onchange="updateReportPeriod()">
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month" selected>This Month</option>
+          <option value="year">This Year</option>
+        </select>
+        <button class="btn btn-primary" onclick="exportAllReports()">
+          <i class="fas fa-download"></i>
+          Export All
+        </button>
+      </div>
+    </div>
+
+    <!-- Key Performance Indicators -->
+    <div class="kpi-section">
+      <h2>Key Performance Indicators</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card revenue">
+          <div class="kpi-icon">
+            <i class="fas fa-peso-sign"></i>
+          </div>
+          <div class="kpi-content">
+            <h3>Total Revenue</h3>
+            <div class="kpi-value" id="total-revenue">₱0</div>
+            <div class="kpi-change positive" id="revenue-change">+0% from last period</div>
+          </div>
+        </div>
+
+        <div class="kpi-card customers">
+          <div class="kpi-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="kpi-content">
+            <h3>Total Customers</h3>
+            <div class="kpi-value" id="total-customers">0</div>
+            <div class="kpi-change positive" id="customers-change">+0% from last period</div>
+          </div>
+        </div>
+
+        <div class="kpi-card services">
+          <div class="kpi-icon">
+            <i class="fas fa-cut"></i>
+          </div>
+          <div class="kpi-content">
+            <h3>Services Completed</h3>
+            <div class="kpi-value" id="total-services">0</div>
+            <div class="kpi-change positive" id="services-change">+0% from last period</div>
+          </div>
+        </div>
+
+        <div class="kpi-card efficiency">
+          <div class="kpi-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="kpi-content">
+            <h3>Avg Service Time</h3>
+            <div class="kpi-value" id="avg-service-time">0m</div>
+            <div class="kpi-change negative" id="time-change">+0% from last period</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Revenue Trend</h3>
+          <select class="chart-filter" id="revenue-chart-filter">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="chart-placeholder" id="revenue-chart">
+          <div class="chart-mock">
+            <div class="chart-title">Revenue Over Time</div>
+            <div class="chart-bars">
+              <div class="chart-bar" style="height: 60%">
+                <span class="bar-value">₱15k</span>
+                <span class="bar-label">Week 1</span>
+              </div>
+              <div class="chart-bar" style="height: 80%">
+                <span class="bar-value">₱20k</span>
+                <span class="bar-label">Week 2</span>
+              </div>
+              <div class="chart-bar" style="height: 90%">
+                <span class="bar-value">₱22.5k</span>
+                <span class="bar-label">Week 3</span>
+              </div>
+              <div class="chart-bar" style="height: 75%">
+                <span class="bar-value">₱18.8k</span>
+                <span class="bar-label">Week 4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Popular Services</h3>
+        </div>
+        <div class="chart-placeholder" id="services-chart">
+          <div class="services-breakdown">
+            <div class="service-stat">
+              <div class="service-bar">
+                <div class="service-fill" style="width: 85%"></div>
+              </div>
+              <div class="service-info">
+                <span class="service-name">Haircut</span>
+                <span class="service-count">42 bookings</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <div class="service-bar">
+                <div class="service-fill" style="width: 65%"></div>
+              </div>
+              <div class="service-info">
+                <span class="service-name">Hair Spa</span>
+                <span class="service-count">32 bookings</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <div class="service-bar">
+                <div class="service-fill" style="width: 45%"></div>
+              </div>
+              <div class="service-info">
+                <span class="service-name">Manicure</span>
+                <span class="service-count">22 bookings</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <div class="service-bar">
+                <div class="service-fill" style="width: 35%"></div>
+              </div>
+              <div class="service-info">
+                <span class="service-name">Facial</span>
+                <span class="service-count">17 bookings</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff Performance -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Staff Performance</h2>
+        <button class="btn btn-secondary" onclick="exportStaffReport()">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+      </div>
+      
+      <div class="performance-table-container">
+        <table class="data-table" id="staff-performance-table">
+          <thead>
+            <tr>
+              <th>Staff Member</th>
+              <th>Customers Served</th>
+              <th>Revenue Generated</th>
+              <th>Avg Service Time</th>
+              <th>Rating</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Staff performance data will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Customer Analytics -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Customer Analytics</h2>
+        <button class="btn btn-secondary" onclick="exportCustomerReport()">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+      </div>
+      
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>Customer Types</h4>
+          <div class="customer-types">
+            <div class="type-stat">
+              <span class="type-label">Walk-ins</span>
+              <div class="type-bar">
+                <div class="type-fill walk-in" style="width: 60%"></div>
+              </div>
+              <span class="type-percentage">60%</span>
+            </div>
+            <div class="type-stat">
+              <span class="type-label">Online Bookings</span>
+              <div class="type-bar">
+                <div class="type-fill online" style="width: 40%"></div>
+              </div>
+              <span class="type-percentage">40%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <h4>Peak Hours</h4>
+          <div class="peak-hours">
+            <div class="hour-stat">
+              <span class="hour-label">10:00 - 12:00</span>
+              <div class="hour-bar">
+                <div class="hour-fill" style="width: 30%"></div>
+              </div>
+            </div>
+            <div class="hour-stat">
+              <span class="hour-label">12:00 - 14:00</span>
+              <div class="hour-bar">
+                <div class="hour-fill" style="width: 75%"></div>
+              </div>
+            </div>
+            <div class="hour-stat">
+              <span class="hour-label">14:00 - 16:00</span>
+              <div class="hour-bar">
+                <div class="hour-fill" style="width: 90%"></div>
+              </div>
+            </div>
+            <div class="hour-stat">
+              <span class="hour-label">16:00 - 18:00</span>
+              <div class="hour-bar">
+                <div class="hour-fill" style="width: 85%"></div>
+              </div>
+            </div>
+            <div class="hour-stat">
+              <span class="hour-label">18:00 - 20:00</span>
+              <div class="hour-bar">
+                <div class="hour-fill" style="width: 60%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <h4>Customer Satisfaction</h4>
+          <div class="satisfaction-score">
+            <div class="score-circle">
+              <div class="score-fill" style="--score: 87%">
+                <span class="score-text">4.4/5</span>
+              </div>
+            </div>
+            <div class="score-details">
+              <div class="score-item">
+                <span class="stars">★★★★★</span>
+                <span class="count">45</span>
+              </div>
+              <div class="score-item">
+                <span class="stars">★★★★☆</span>
+                <span class="count">28</span>
+              </div>
+              <div class="score-item">
+                <span class="stars">★★★☆☆</span>
+                <span class="count">5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Financial Summary</h2>
+        <button class="btn btn-secondary" onclick="exportFinancialReport()">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+      </div>
+      
+      <div class="financial-grid">
+        <div class="financial-card">
+          <h4>Revenue Breakdown</h4>
+          <div class="revenue-items">
+            <div class="revenue-item">
+              <span class="revenue-label">Services</span>
+              <span class="revenue-amount">₱45,230</span>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">Packages</span>
+              <span class="revenue-amount">₱12,450</span>
+            </div>
+            <div class="revenue-item">
+              <span class="revenue-label">Tips</span>
+              <span class="revenue-amount">₱3,280</span>
+            </div>
+            <div class="revenue-item total">
+              <span class="revenue-label">Total</span>
+              <span class="revenue-amount">₱60,960</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="financial-card">
+          <h4>Monthly Targets</h4>
+          <div class="targets">
+            <div class="target-item">
+              <span class="target-label">Revenue Target</span>
+              <div class="target-progress">
+                <div class="target-bar">
+                  <div class="target-fill" style="width: 75%"></div>
+                </div>
+                <span class="target-text">₱45k / ₱60k</span>
+              </div>
+            </div>
+            <div class="target-item">
+              <span class="target-label">Customers Target</span>
+              <div class="target-progress">
+                <div class="target-bar">
+                  <div class="target-fill" style="width: 82%"></div>
+                </div>
+                <span class="target-text">164 / 200</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="admin-script.js"></script>
+  <script>
+    // Mock data for demonstration
+    const queueData = [
+      { queueNumber: 'Q001', customerName: 'John Doe', type: 'walk-in', services: ['haircut'], total: 350, status: 'completed', timestamp: new Date(), staff: 'Mike Santos' },
+      { queueNumber: 'Q002', customerName: 'Jane Smith', type: 'online', services: ['hair-spa'], total: 800, status: 'completed', timestamp: new Date(), staff: 'Sarah Cruz' },
+      { queueNumber: 'Q003', customerName: 'Bob Johnson', type: 'walk-in', services: ['manicure'], total: 450, status: 'completed', timestamp: new Date(), staff: 'Alex Rivera' }
+    ];
+
+    const staffData = [
+      { name: 'Mike Santos', role: 'Senior Barber', avatar: 'MS', status: 'available', totalToday: 12 },
+      { name: 'Sarah Cruz', role: 'Hair Stylist', avatar: 'SC', status: 'busy', totalToday: 8 },
+      { name: 'Alex Rivera', role: 'Barber', avatar: 'AR', status: 'available', totalToday: 10 }
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!checkAuth()) {
+        window.location.href = 'admin-index.html';
+        return;
+      }
+      initReports();
+    });
+
+    function checkAuth() {
+      // Mock authentication check
+      return true;
+    }
+
+    function initReports() {
+      loadReportData();
+      renderStaffPerformanceTable();
+    }
+
+    function loadReportData() {
+      // Calculate KPIs based on actual data
+      const totalRevenue = queueData
+        .filter(item => item.status === 'completed')
+        .reduce((sum, item) => sum + (item.total || 0), 0);
+      
+      const totalCustomers = queueData.length;
+      const totalServices = queueData.filter(item => item.status === 'completed').length;
+      const avgServiceTime = 45; // Mock data
+
+      updateMetricElement('total-revenue', `₱${totalRevenue.toLocaleString()}`);
+      updateMetricElement('total-customers', totalCustomers);
+      updateMetricElement('total-services', totalServices);
+      updateMetricElement('avg-service-time', `${avgServiceTime}m`);
+    }
+
+    function updateMetricElement(id, value) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      }
+    }
+
+    function renderStaffPerformanceTable() {
+      const tbody = document.querySelector('#staff-performance-table tbody');
+      if (!tbody) return;
+
+      // Mock staff performance data
+      const performanceData = staffData.map(staff => ({
+        ...staff,
+        customersServed: staff.totalToday || Math.floor(Math.random() * 15) + 5,
+        revenueGenerated: (staff.totalToday || Math.floor(Math.random() * 15) + 5) * 350,
+        avgServiceTime: Math.floor(Math.random() * 20) + 35,
+        rating: (Math.random() * 1 + 4).toFixed(1)
+      }));
+
+      tbody.innerHTML = performanceData.map(staff => `
+        <tr>
+          <td>
+            <div class="staff-info">
+              <div class="staff-avatar">${staff.avatar}</div>
+              <div>
+                <div class="staff-name">${staff.name}</div>
+                <div class="staff-role">${staff.role}</div>
+              </div>
+            </div>
+          </td>
+          <td><strong>${staff.customersServed}</strong></td>
+          <td><strong>₱${staff.revenueGenerated.toLocaleString()}</strong></td>
+          <td>${staff.avgServiceTime}min</td>
+          <td>
+            <div class="rating">
+              <span class="rating-stars">${'★'.repeat(Math.floor(staff.rating))}${'☆'.repeat(5 - Math.floor(staff.rating))}</span>
+              <span class="rating-score">${staff.rating}</span>
+            </div>
+          </td>
+          <td>
+            <div class="performance-meter">
+              <div class="performance-bar">
+                <div class="performance-fill" style="width: ${Math.min(staff.customersServed * 6, 100)}%"></div>
+              </div>
+              <span class="performance-text">${staff.customersServed > 10 ? 'Excellent' : staff.customersServed > 7 ? 'Good' : 'Average'}</span>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateReportPeriod() {
+      const period = document.getElementById('report-period').value;
+      showNotification(`Report period updated to: ${period}`, 'info');
+      loadReportData();
+    }
+
+    function exportAllReports() {
+      showNotification('Exporting all reports...', 'info');
+      setTimeout(() => {
+        showNotification('All reports exported successfully', 'success');
+      }, 2000);
+    }
+
+    function exportStaffReport() {
+      const csvData = staffData.map(staff => ({
+        'Staff Name': staff.name,
+        'Role': staff.role,
+        'Customers Served': staff.totalToday || 0,
+        'Revenue Generated': (staff.totalToday || 0) * 350,
+        'Status': staff.status
+      }));
+      
+      exportToCSV(csvData, 'staff-performance-report.csv');
+      showNotification('Staff report exported', 'success');
+    }
+
+    function exportCustomerReport() {
+      const csvData = queueData.map(customer => ({
+        'Queue Number': customer.queueNumber,
+        'Customer Name': customer.customerName,
+        'Type': customer.type,
+        'Services': getServiceNames(customer.services),
+        'Total Amount': customer.total || 0,
+        'Status': customer.status,
+        'Date': formatDate(customer.timestamp)
+      }));
+      
+      exportToCSV(csvData, 'customer-analytics-report.csv');
+      showNotification('Customer report exported', 'success');
+    }
+
+    function exportFinancialReport() {
+      const completedServices = queueData.filter(item => item.status === 'completed');
+      const csvData = completedServices.map(service => ({
+        'Date': formatDate(service.timestamp),
+        'Service': getServiceNames(service.services),
+        'Amount': service.total || 0,
+        'Staff': service.staff,
+        'Type': service.type
+      }));
+      
+      exportToCSV(csvData, 'financial-summary-report.csv');
+      showNotification('Financial report exported', 'success');
+    }
+
+    // Utility functions
+    function showNotification(message, type = 'info') {
+      console.log(`${type.toUpperCase()}: ${message}`);
+      // In a real implementation, this would show a toast notification
+    }
+
+    function logout() {
+      window.location.href = 'admin-index.html';
+    }
+
+    function getServiceNames(services) {
+      const serviceMap = {
+        'haircut': 'Haircut',
+        'hair-spa': 'Hair Spa',
+        'manicure': 'Manicure',
+        'facial': 'Facial'
+      };
+      return services.map(service => serviceMap[service] || service).join(', ');
+    }
+
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function exportToCSV(data, filename) {
+      if (data.length === 0) return;
+      
+      const headers = Object.keys(data[0]);
+      const csvContent = [
+        headers.join(','),
+        ...data.map(row => headers.map(header => `"${row[header]}"`).join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Make functions globally available
+    window.updateReportPeriod = updateReportPeriod;
+    window.exportAllReports = exportAllReports;
+    window.exportStaffReport = exportStaffReport;
+    window.exportCustomerReport = exportCustomerReport;
+    window.exportFinancialReport = exportFinancialReport;
+  </script>
+</body>
+</html>

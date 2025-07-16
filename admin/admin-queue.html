@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GQ Barbershop - Queue Management</title>
+  <link rel="stylesheet" href="admin-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="gq-logo.jpg" alt="GQ Logo" class="side-logo" />
+      <span class="brand-title">GQ BARBERSHOP ADMIN</span>
+    </div>
+    <nav class="dashboard-nav">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="admin-queue.html" class="active">Queue Management</a>
+      <a href="admin-bookings.html">Bookings</a>
+      <a href="admin-barbers.html">Staff Tracker</a>
+      <a href="admin-services.html">Services</a>
+      <a href="admin-discounts.html">Discounts</a>
+      <a href="admin-reports.html">Reports</a>
+    </nav>
+    <div class="profile-section">
+      <div class="profile-dropdown">
+        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+        <div class="dropdown-menu">
+          <a href="admin-profile.html">Profile</a>
+          <a href="admin-settings.html">Settings</a>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+  <div class="page-header">
+    <h1 class="page-title">Queue Management</h1>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openAddToQueueModal()">
+        <i class="fas fa-plus"></i>
+        Add to Queue
+      </button>
+      <button class="btn btn-secondary" onclick="refreshQueue()">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+    <!-- Queue Statistics -->
+    <div class="queue-layout-container">
+    <!-- Item 1: Queue Statistics (3 items in a row) -->
+    <div class="queue-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon waiting">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Waiting</h3>
+          <div class="stat-number" id="waiting-count">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon serving">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Being Served</h3>
+          <div class="stat-number" id="serving-count">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon completed">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Completed Today</h3>
+          <div class="stat-number" id="completed-count">0</div>
+        </div>
+      </div>
+    </div>
+    <!-- Queue Controls -->
+    <div class="queue-controls">
+      <div class="control-group">
+        <label>Filter by Type:</label>
+        <select id="queue-filter" onchange="filterQueue()">
+          <option value="all">All Types</option>
+          <option value="walk-in">Walk-ins</option>
+          <option value="online">Online Appointments</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Filter by Status:</label>
+        <select id="status-filter" onchange="filterQueue()">
+          <option value="all">All Status</option>
+          <option value="waiting">Waiting</option>
+          <option value="serving">Being Served</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Item 3: Current Queue (full width) -->
+    <div class="queue-section">
+      <div class="section-header">
+        <h2>Current Queue</h2>
+        <div class="queue-actions">
+          <button class="btn-icon" onclick="callNext()" title="Call Next Customer">
+            <i class="fas fa-bell"></i>
+          </button>
+          <button class="btn-icon" onclick="toggleAutoCall()" title="Auto Call" id="auto-call-btn">
+            <i class="fas fa-play"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="queue-list" id="queue-list">
+        <!-- Queue items will be dynamically loaded -->
+      </div>
+    </div>
+
+    <!-- Item 4: Today's History (full width) -->
+    <div class="queue-section">
+      <div class="section-header">
+        <h2>Today's History</h2>
+      </div>
+      <div class="queue-history" id="queue-history">
+        <!-- Completed queue items will be shown here -->
+      </div>
+    </div>
+  </div>
+</main>
+
+  <!-- Add to Queue Modal -->
+  <div id="add-queue-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Add Customer to Queue</h3>
+        <button class="modal-close" onclick="closeAddToQueueModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <form id="add-queue-form">
+          <div class="form-group">
+            <label for="queue-customer-name">Customer Name</label>
+            <input type="text" id="queue-customer-name" placeholder="Enter customer name (optional)">
+          </div>
+          <div class="form-group">
+            <label for="queue-customer-phone">Phone Number</label>
+            <input type="tel" id="queue-customer-phone" placeholder="+63 XXX XXX XXXX">
+          </div>
+          <div class="form-group">
+            <label for="queue-type">Queue Type</label>
+            <select id="queue-type" required>
+              <option value="walk-in">Walk-in</option>
+              <option value="online">Online Appointment</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="queue-services">Services</label>
+            <div class="services-selection" id="services-selection">
+              <!-- Services checkboxes will be generated here -->
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="queue-staff">Assign Staff</label>
+            <select id="queue-staff" required>
+              <option value="">Select staff member</option>
+              <!-- Staff options will be loaded dynamically -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="queue-priority">Priority</label>
+            <select id="queue-priority">
+              <option value="normal">Normal</option>
+              <option value="high">High (Senior/PWD)</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeAddToQueueModal()">Cancel</button>
+        <button type="submit" form="add-queue-form" class="btn btn-primary">Add to Queue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Queue Item Actions Modal -->
+  <div id="queue-actions-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Queue Actions</h3>
+        <button class="modal-close" onclick="closeQueueActionsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div class="queue-item-details" id="selected-queue-item">
+          <!-- Selected queue item details will be shown here -->
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-success" onclick="startService()">
+            <i class="fas fa-play"></i>
+            Start Service
+          </button>
+          <button class="btn btn-warning" onclick="pauseService()">
+            <i class="fas fa-pause"></i>
+            Pause
+          </button>
+          <button class="btn btn-primary" onclick="completeService()">
+            <i class="fas fa-check"></i>
+            Complete
+          </button>
+          <button class="btn btn-secondary" onclick="moveInQueue()">
+            <i class="fas fa-arrows-alt"></i>
+            Move in Queue
+          </button>
+          <button class="btn btn-danger" onclick="removeFromQueue()">
+            <i class="fas fa-times"></i>
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin-script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!checkAuth()) {
+        window.location.href = 'admin-index.html';
+        return;
+      }
+      initQueueManagement();
+    });
+  </script>
+</body>
+</html>
