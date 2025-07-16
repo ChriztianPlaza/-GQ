@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GQ Barbershop - In-Store System</title>
+    <link rel="stylesheet" href="store-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="store-body">
+    <!-- Background -->
+    <div class="store-background">
+        <div class="background-overlay"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="store-container">
+        <!-- Header -->
+        <div class="store-header">
+            <div class="store-logo">
+                <div class="logo-container">
+                    <span class="logo-text">Barbershop</span>
+                    <div class="gq-badge">
+                        <span class="gq-text">GQ</span>
+                        <span class="badge-subtitle">BARBER SHOP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="store-content">
+            <div class="welcome-section">
+                <h1 class="welcome-title">Welcome to GQ Barbershop</h1>
+                <p class="welcome-subtitle">Please select how you'd like to proceed</p>
+            </div>
+
+            <div class="options-container">
+                <!-- Walk-in Option -->
+                <div class="service-option walk-in-option" id="walkInOption">
+                    <div class="option-content">
+                        <div class="option-icon">
+                            <i class="fas fa-walking"></i>
+                        </div>
+                        <h2 class="option-title">Walk-In</h2>
+                        <p class="option-description">Get immediate service</p>
+                        <div class="option-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Appointment Option -->
+                <div class="service-option online-option" id="onlineOption">
+                    <div class="option-content">
+                        <div class="option-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h2 class="option-title">Online Appointment</h2>
+                        <p class="option-description">Check in with your booking number</p>
+                        <div class="option-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Info -->
+            <div class="store-footer">
+                <div class="business-hours">
+                    <i class="fas fa-clock"></i>
+                    <span>Open: Sun-Sat 10AM-9PM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="store-script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initStoreLanding();
+        });
+    </script>
+</body>
+</html>

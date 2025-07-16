@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code - GQ Barbershop Store</title>
+    <link rel="stylesheet" href="store-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Store OTP Verification Page -->
+    <div class="simple-otp-page active">
+        <!-- Header -->
+        <div class="store-simple-header">
+            <div class="store-simple-logo">
+                <div class="store-simple-logo-text">GQ</div>
+            </div>
+            <button class="store-simple-back-btn" onclick="window.location.href='store-phone-verification.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="simple-otp-content">
+            <h1 class="simple-otp-title">Enter Code</h1>
+            <p class="simple-otp-subtitle">
+                We sent a 6-digit code to<br>
+                <span id="storeVerificationPhoneDisplay"></span>
+            </p>
+            
+            <form id="storeOtpVerificationForm">
+                <div class="simple-otp-inputs">
+                    <input type="text" class="simple-otp-input store-otp-input" maxlength="1" readonly required>
+                    <input type="text" class="simple-otp-input store-otp-input" maxlength="1" readonly required>
+                    <input type="text" class="simple-otp-input store-otp-input" maxlength="1" readonly required>
+                    <input type="text" class="simple-otp-input store-otp-input" maxlength="1" readonly required>
+                    <input type="text" class="simple-otp-input store-otp-input" maxlength="1" readonly required>
+                    <input type="text" class="simple-otp-input store-otp-input" maxlength="1" readonly required>
+                </div>
+                
+                <button type="submit" class="simple-verify-btn" id="storeVerifyCodeBtn">
+                    <span class="btn-text-simple">Verify Code</span>
+                    <span class="btn-loading-simple" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Verifying...
+                    </span>
+                </button>
+            </form>
+
+            <div class="simple-resend-section">
+                <p>Didn't receive the code?</p>
+                <button class="simple-resend-btn" id="storeResendCodeBtn">
+                    Resend Code
+                </button>
+                <div class="simple-timer" id="storeResendTimer" style="display: none;">
+                    Resend in <span id="storeTimerCount">30</span>s
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Virtual Numeric Keyboard for OTP -->
+    <div class="virtual-keyboard" id="otpVirtualKeyboard">
+        <div class="keyboard-header">
+            <h3 class="keyboard-title">Enter Verification Code</h3>
+            <button class="keyboard-close" id="otpKeyboardClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="keyboard-rows">
+            <!-- Number Pad Layout -->
+            <div class="keyboard-row">
+                <button class="keyboard-key" data-key="1">1</button>
+                <button class="keyboard-key" data-key="2">2</button>
+                <button class="keyboard-key" data-key="3">3</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-key" data-key="4">4</button>
+                <button class="keyboard-key" data-key="5">5</button>
+                <button class="keyboard-key" data-key="6">6</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-key" data-key="7">7</button>
+                <button class="keyboard-key" data-key="8">8</button>
+                <button class="keyboard-key" data-key="9">9</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-key backspace" data-key="backspace">
+                    <i class="fas fa-backspace"></i>
+                </button>
+                <button class="keyboard-key" data-key="0">0</button>
+                <button class="keyboard-key enter" data-key="done">
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="store-script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initStoreOTPVerification();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Verification - GQ Barbershop Store</title>
+    <link rel="stylesheet" href="store-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Store Phone Verification Page -->
+    <div class="store-verification-page">
+        <!-- Header -->
+        <div class="store-simple-header">
+            <div class="store-simple-logo">
+                <div class="store-simple-logo-text">GQ</div>
+            </div>
+            <button class="store-simple-back-btn" onclick="window.location.href='store-index.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="store-simple-content">
+            <h1 class="store-simple-title">Enter Your Number</h1>
+            <p class="verification-subtitle-clean">We'll send you a verification code to confirm your booking</p>
+            
+            <form id="storePhoneVerificationForm">
+                <div class="store-phone-input-container">
+                    <input 
+                        type="tel" 
+                        id="storePhoneNumber" 
+                        class="store-simple-phone-input"
+                        placeholder="Tap to enter phone number" 
+                        readonly
+                        required
+                    >
+                    <i class="fas fa-keyboard keyboard-trigger"></i>
+                </div>
+                
+                <button type="submit" class="simple-send-btn" id="storeSendCodeBtn" disabled>
+                    <span class="btn-text-simple">Send Code</span>
+                    <span class="btn-loading-simple" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Sending...
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Virtual Keyboard -->
+    <div class="virtual-keyboard" id="virtualKeyboard">
+        <div class="keyboard-header">
+            <h3 class="keyboard-title">Enter Phone Number</h3>
+            <button class="keyboard-close" id="keyboardClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="keyboard-rows">
+            <!-- Number Row -->
+            <div class="keyboard-row">
+                <button class="keyboard-key" data-key="1">1</button>
+                <button class="keyboard-key" data-key="2">2</button>
+                <button class="keyboard-key" data-key="3">3</button>
+                <button class="keyboard-key" data-key="4">4</button>
+                <button class="keyboard-key" data-key="5">5</button>
+                <button class="keyboard-key" data-key="6">6</button>
+                <button class="keyboard-key" data-key="7">7</button>
+                <button class="keyboard-key" data-key="8">8</button>
+                <button class="keyboard-key" data-key="9">9</button>
+                <button class="keyboard-key" data-key="0">0</button>
+            </div>
+            
+            <!-- Special Keys Row -->
+            <div class="keyboard-row">
+                <button class="keyboard-key" data-key="+">+</button>
+                <button class="keyboard-key space" data-key=" ">Space</button>
+                <button class="keyboard-key backspace" data-key="backspace">
+                    <i class="fas fa-backspace"></i>
+                </button>
+            </div>
+            
+            <!-- Action Row -->
+            <div class="keyboard-row">
+                <button class="keyboard-key enter" data-key="done">
+                    <i class="fas fa-check"></i> Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="store-script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Initializing phone verification page...');
+        initStorePhoneVerification();
+    });
+    </script>
+</body>
+</html>

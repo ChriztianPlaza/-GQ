@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Your Number - GQ Barbershop</title>
+    <link rel="stylesheet" href="store-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Simple Number Input Page -->
+    <div class="number-input-page">
+        <!-- Header -->
+        <div class="number-input-header">
+            <div class="number-input-logo">
+                <div class="number-logo-text">GQ</div>
+            </div>
+            <button class="number-back-btn" onclick="window.location.href='store-index.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="number-input-content">
+            <h1 class="number-input-title">Enter Your Number</h1>
+            
+            <!-- Instructions Section -->
+            <div class="booking-instructions">
+                <div class="instruction-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="instruction-text">
+                    <h3>Enter the Last 3 Digits</h3>
+                    <p class="example">Example: If your booking is <span class="highlight">GQ-20241208-456</span>, enter <span class="highlight-number">456</span></p>
+                </div>
+            </div>
+            
+            <form id="numberInputForm">
+                <div class="number-display-container">
+                    <input 
+                        type="text" 
+                        id="appointmentNumber" 
+                        class="number-display-input"
+                        placeholder="XXX"
+                        readonly
+                        maxlength="3"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="number-done-btn" id="numberDoneBtn" disabled>
+                    DONE
+                </button>
+            </form>
+        </div>
+
+        <!-- Built-in Keypad -->
+        <div class="built-in-keypad">
+            <div class="keypad-row">
+                <button class="keypad-key" data-number="1">1</button>
+                <button class="keypad-key" data-number="2">2</button>
+                <button class="keypad-key" data-number="3">3</button>
+            </div>
+            <div class="keypad-row">
+                <button class="keypad-key" data-number="4">4</button>
+                <button class="keypad-key" data-number="5">5</button>
+                <button class="keypad-key" data-number="6">6</button>
+            </div>
+            <div class="keypad-row">
+                <button class="keypad-key" data-number="7">7</button>
+                <button class="keypad-key" data-number="8">8</button>
+                <button class="keypad-key" data-number="9">9</button>
+            </div>
+            <div class="keypad-row">
+                <button class="keypad-key clear" data-action="clear">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button class="keypad-key" data-number="0">0</button>
+                <button class="keypad-key backspace" data-action="backspace">
+                    <i class="fas fa-backspace"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="numberSuccessModal" class="modal-overlay">
+        <div class="modal-container success">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Number Added to Queue!</h3>
+            </div>
+            
+            <div class="modal-content">
+                <div class="booking-details">
+                    <div class="queue-number">
+                        <span class="queue-label">Your Queue Number:</span>
+                        <span class="queue-value" id="successQueueNumber">---</span>
+                        <span class="queue-type online">ONLINE</span>
+                    </div>
+                    
+                    <div class="instructions">
+                        <h4>What's Next:</h4>
+                        <ul>
+                            <li>You've been added to the digital queue</li>
+                            <li>Check the queue monitor for your position</li>
+                            <li>You'll receive SMS notifications as your turn approaches</li>
+                            <li>Please be ready when your number is called</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="done-btn" onclick="window.location.href='store-index.html'">
+                    <i class="fas fa-home"></i>
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initNumberInput();
+        });
+
+        function initNumberInput() {
+            const numberInput = document.getElementById('appointmentNumber');
+            const doneBtn = document.getElementById('numberDoneBtn');
+            const form = document.getElementById('numberInputForm');
+            const keypadKeys = document.querySelectorAll('.keypad-key');
+            
+            let currentNumber = '';
+            
+            // Keypad functionality
+            keypadKeys.forEach(key => {
+                key.addEventListener('click', () => {
+                    const number = key.dataset.number;
+                    const action = key.dataset.action;
+                    
+                    // Add visual feedback
+                    key.style.transform = 'scale(0.95)';
+                    key.style.background = 'var(--accent-gold)';
+                    setTimeout(() => {
+                        key.style.transform = '';
+                        key.style.background = '';
+                    }, 150);
+                    
+                    if (number && currentNumber.length < 3) {
+                        // Add number
+                        currentNumber += number;
+                        updateDisplay();
+                    } else if (action === 'backspace' && currentNumber.length > 0) {
+                        // Remove last number
+                        currentNumber = currentNumber.slice(0, -1);
+                        updateDisplay();
+                    } else if (action === 'clear') {
+                        // Clear all
+                        currentNumber = '';
+                        updateDisplay();
+                    }
+                });
+            });
+            
+            function updateDisplay() {
+                numberInput.value = currentNumber;
+                
+                // Enable/disable done button
+                doneBtn.disabled = currentNumber.length !== 3;
+                doneBtn.style.opacity = currentNumber.length === 3 ? '1' : '0.5';
+            }
+            
+            // Form submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (currentNumber.length === 3) {
+                    processNumberEntry(currentNumber);
+                }
+            });
+        }
+        
+        function processNumberEntry(number) {
+            const doneBtn = document.getElementById('numberDoneBtn');
+            const originalText = doneBtn.textContent;
+            
+            // Show loading state
+            doneBtn.textContent = 'PROCESSING...';
+            doneBtn.disabled = true;
+            
+            // Simulate processing
+            setTimeout(() => {
+                // Generate full queue number
+                const date = new Date();
+                const dateStr = date.getFullYear().toString() + 
+                               (date.getMonth() + 1).toString().padStart(2, '0') + 
+                               date.getDate().toString().padStart(2, '0');
+                const queueNumber = `GQ-${dateStr}-${number}`;
+                
+                // Show success modal
+                showNumberSuccess(queueNumber);
+                
+                // Reset button
+                doneBtn.textContent = originalText;
+                doneBtn.disabled = false;
+                
+                // Add to queue (simulation)
+                addToQueue(queueNumber, number);
+                
+            }, 1500);
+        }
+        
+        function showNumberSuccess(queueNumber) {
+            const modal = document.getElementById('numberSuccessModal');
+            const queueNumberDisplay = document.getElementById('successQueueNumber');
+            
+            queueNumberDisplay.textContent = queueNumber;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function addToQueue(queueNumber, enteredNumber) {
+            // Add to localStorage queue system
+            const queueEntry = {
+                queueNumber: queueNumber,
+                enteredNumber: enteredNumber,
+                type: 'online',
+                timestamp: new Date().toISOString(),
+                status: 'waiting'
+            };
+            
+            localStorage.setItem(`queue_${queueNumber}`, JSON.stringify(queueEntry));
+            console.log('Added to queue:', queueEntry);
+        }
+    </script>
+</body>
+</html>

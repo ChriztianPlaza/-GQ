@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Services - GQ Barbershop Store</title>
+    <link rel="stylesheet" href="store-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Store Booking Selection Page -->
+    <div class="booking-selection-page">
+        <!-- Header -->
+        <div class="store-simple-header">
+            <div class="store-simple-logo">
+                <div class="store-simple-logo-text">GQ</div>
+            </div>
+            <button class="store-simple-back-btn" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="booking-selection-content">
+            <!-- Services & Staff Assignment Section -->
+            <div class="selection-section">
+                <h2 class="section-title">Choose Services & Assign Staff</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" id="storeAddStaffBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Staff Member
+                    </button>
+                    <button class="action-btn secondary" id="storeDeleteStaffBtn">
+                        <i class="fas fa-trash"></i>
+                        Remove Last Staff
+                    </button>
+                </div>
+                
+                <div class="staff-services-container" id="storeStaffServicesContainer">
+                    <!-- Staff assignments will be generated here by JS -->
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="booking-summary">
+                <div class="summary-content">
+                    <h3>Walk-In Booking Summary</h3>
+                    <div class="summary-assignments" id="storeSummaryAssignments">
+                        <p class="no-selection">No staff assignments made</p>
+                    </div>
+                    <div class="summary-total">
+                        <span class="total-label">Total: </span>
+                        <span class="total-amount" id="storeTotalAmount">₱0</span>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Get Number Button -->
+            <button class="get-number-btn" id="storeGetNumberBtn" disabled>
+                <i class="fas fa-ticket-alt"></i>
+                Get Walk-In Number
+            </button>
+        </div>
+    </div>
+
+    <!-- Walk-In Confirmation Modal -->
+    <div id="storeConfirmationModal" class="modal-overlay">
+        <div class="modal-container success">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Walk-In Number Assigned!</h3>
+            </div>
+            
+            <div class="modal-content">
+                <div class="booking-details">
+                    <div class="queue-number">
+                        <span class="queue-label">Your Walk-In Number:</span>
+                        <span class="queue-value" id="storeQueueNumber">---</span>
+                        <span class="queue-type walk-in">WALK-IN</span>
+                    </div>
+                    
+                    <div class="booking-info">
+                        <div class="info-row">
+                            <span class="info-label">Time Issued:</span>
+                            <span class="info-value" id="storeTimeIssued">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Services:</span>
+                            <span class="info-value" id="storeConfirmedServices">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Staff:</span>
+                            <span class="info-value" id="storeConfirmedStaff">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Total:</span>
+                            <span class="info-value" id="storeConfirmedTotal">---</span>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <h4>Instructions:</h4>
+                        <ul>
+                            <li>Take a picture/screenshot of your number</li>
+                            <li>Keep this number safe - you'll need it for service</li>
+                            <li>Wait for your number to be called</li>
+                            <li>You can check queue status on the main display</li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="done-btn" onclick="window.location.href='store-index.html'">
+                    <i class="fas fa-home"></i>
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="store-script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initStoreBookingSelection();
+        });
+    </script>
+</body>
+</html>
